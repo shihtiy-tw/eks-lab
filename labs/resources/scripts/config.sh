@@ -47,8 +47,9 @@ AZ_ARRAY=$(aws ec2 describe-availability-zones \
 export EKS_CLUSTER_REGION=${EKS_CLUSTER_REGION:-"us-east-1"}
 export EKS_CLUSTER_NAME=${EKS_CLUSTER_NAME:-"EKS-Lab"}-${CLUSTER_CONFIG}
 export CLUSTER_CONFIG=${CLUSTER_CONFIG:-"minimal"}
-export AZ_ARRAY=$(echo "$AZ_ARRAY" | sed 's/""/"/g')
-export CLUSTER_VERSION="$(echo $1)"
+export AZ_ARRAY=$(echo "${AZ_ARRAY:-'["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]'}" | sed 's/""/"/g')
+export CLUSTER_VERSION="${1:-1.30}"
+export CLUSTER_FILE_LOCATION="$(echo $CLUSTER_VERSION| sed 's/\./-/')"
 
 
 echo "Configuring cluster $EKS_CLUSTER_NAME in region $EKS_CLUSTER_REGION with AZs: $AZ_ARRAY"

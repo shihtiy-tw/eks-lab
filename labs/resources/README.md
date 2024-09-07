@@ -36,9 +36,11 @@ This script (`setup.sh`) automates the process of setting up an Amazon EKS (Elas
 
 ## Usage
 
+### Clusters
+
 ```bash
-$ ./setup.sh [CLUSTER_NAME] [REGION] [CONFIG_TYPE]
-$ ./setup.sh 1.29 us-east-2 minimal
+$ ./setup.sh cluster [CLUSTER_VERSION] [REGION] [CONFIG_TYPE]
+$ ./setup.sh cluster 1.29 us-east-2 minimal
 ```
 
 1. CLUSTER_NAME (optional): Name of the EKS cluster. If not provided, defaults to "EKS-Lab-VERSION".
@@ -48,6 +50,13 @@ $ ./setup.sh 1.29 us-east-2 minimal
    - minimal: Minimal cluster configuration
    - ipv6: Cluster with IPv6 support
    - private: Private cluster configuration
+
+### Nodegroup
+
+```bash
+$ ./setup.sh managed-nodegroup [CLUSTER_VERSION] [REGION] [CLUSTER_CONFIG_TYPE] [NODEGROUP_CONFIG] [NODEGROUP_SIZE]
+$ ./setup.sh managed-nodegroup 1.29 us-west-1 minimal on-demand m5.large
+```
 
 ## Tool
 
