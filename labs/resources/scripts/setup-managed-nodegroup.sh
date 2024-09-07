@@ -7,7 +7,7 @@ source $(pwd)/config/.env
 
 export NODEGROUP_CONFIG="${4:-on-demand}"
 export NODEGROUP_SIZE="${5:-m5.large}"
-export NODEGROUP_FILE="$(pwd)/versions/$(echo $CLUSTER_FILE_LOCATION)/managed-nodegroup-${EKS_CLUSTER_NAME}-${EKS_CLUSTER_REGION}-${NODEGROUP_CONFIG}.yaml"
+export NODEGROUP_FILE="$(pwd)/versions/$(echo $CLUSTER_FILE_LOCATION)/${EKS_CLUSTER_NAME}-${EKS_CLUSTER_REGION}-managed-nodegroup-${NODEGROUP_CONFIG}.yaml"
 
 # ANSI color codes
 BLUE='\033[0;34m'
