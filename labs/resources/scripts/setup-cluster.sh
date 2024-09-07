@@ -5,7 +5,7 @@ source $(pwd)/scripts/config.sh $1 $2 $3
 source $(pwd)/config/.env
 
 export CLUSTER_FILE_LOCATION="$(echo $1| sed 's/\./-/')"
-export CLUSTER_FILE="$(pwd)/$(echo $CLUSTER_FILE_LOCATION)/${EKS_CLUSTER_NAME}-${EKS_CLUSTER_REGION}.yaml"
+export CLUSTER_FILE="$(pwd)/versions/$(echo $CLUSTER_FILE_LOCATION)/${EKS_CLUSTER_NAME}-${EKS_CLUSTER_REGION}.yaml"
 
 # ANSI color codes
 BLUE='\033[0;34m'
