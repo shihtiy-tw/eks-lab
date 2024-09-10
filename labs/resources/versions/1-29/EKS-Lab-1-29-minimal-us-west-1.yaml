@@ -46,4 +46,4 @@ cloudWatch:
     # supported special values: "*" and "all"
 
 #secretsEncryption:
-  #keyARN: 
+  #keyARN:

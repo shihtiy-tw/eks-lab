@@ -5,17 +5,15 @@
 
 case "$1" in
     cluster)
-        $(pwd)/scripts/setup-cluster.sh $2 $3 $4
+        "$PWD"/scripts/setup-cluster.sh "$2" "$3" "$4"
         ;;
     managed-nodegroup)
-        # TODO
-        # Setup for EKS nodegroup
-        $(pwd)/scripts/setup-managed-nodegroup.sh $2 $3 $4 $5 $6
+        # TODO: Setup for EKS nodegroup
+        "$PWD"/scripts/setup-managed-nodegroup.sh "$2" "$3" "$4" "$5" "$6"
         ;;
     nodegroup)
-        # TODO
-        # Setup for EKS nodegroup
-        $(pwd)/scripts/setup-nodegruop.sh $2 $3 $4 $5 $6
+        # TODO: Setup for EKS nodegroup
+        "$PWD"/scripts/setup-nodegruop.sh "$2" "$3" "$4" "$5" "$6"
         ;;
     *)
         echo "Invalid setup."
