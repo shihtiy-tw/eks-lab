@@ -7,6 +7,8 @@
 # Don't ignore these
 !*.yaml
 !*.md
+!*.java
+!Dockerfile*
 !*.yml
 !*.json
 !*.sh
