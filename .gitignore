@@ -1,6 +1,8 @@
 # Ignore everything by default
 *
 
+**/versions/
+
 # Don't ignore directories (so we can look inside them, for other files)
 !*/
 

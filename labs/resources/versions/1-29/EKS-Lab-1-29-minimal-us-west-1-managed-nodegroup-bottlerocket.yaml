@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../config/eksctl-schema.json
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
@@ -6,10 +5,7 @@ metadata:
   name: EKS-Lab-1-29-minimal
   version: "1.29"
   region: us-west-1
-  tags: {
-    "auto-delete": "no",
-    "auto-stop": "no"
-  }
+  tags: { "auto-delete": "no", "auto-stop": "no" }
 
 managedNodeGroups:
   - name: managed-nodegroup-bottlerocket
@@ -17,25 +13,26 @@ managedNodeGroups:
     desiredCapacity: 1
     amiFamily: Bottlerocket
     iam:
-       attachPolicyARNs:
-          - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
-          - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
-          # (Optional) Only required if you need "EC2 Instance Connect"
-          - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
-          # (Optional) Only required if you are using "SSM"
-          - arn:aws:iam::aws:policy/AmazonSSMPatchAssociation
-          # (Optional) Only required if you have "Amazon CloudWatch Observability" setup
-          - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
-          - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        # (Optional) Only required if you need "EC2 Instance Connect"
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        # (Optional) Only required if you are using "SSM"
+        - arn:aws:iam::aws:policy/AmazonSSMPatchAssociation
+        # (Optional) Only required if you have "Amazon CloudWatch Observability" setup
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
     ssh:
-        allow: false
+      allow: false
     bottlerocket:
       settings:
         motd: "Hello from eksctl!"
 
-    tags: {
-      "auto-delete": "no",
-      "auto-stop": "no",
-      "k8s.io/cluster-autoscaler/EKS-Lab-1-29-minimal": "owned",
-      "k8s.io/cluster-autoscaler/enabled": "true"
-    }
+    tags:
+      {
+        "auto-delete": "no",
+        "auto-stop": "no",
+        "k8s.io/cluster-autoscaler/EKS-Lab-1-29-minimal": "owned",
+        "k8s.io/cluster-autoscaler/enabled": "true",
+      }
