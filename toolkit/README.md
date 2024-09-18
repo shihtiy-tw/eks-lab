@@ -55,3 +55,13 @@ sudo ./aws/install
 
 $ rm -rf aws awscliv2.zip
 ```
+
+## ECR Builder
+
+```bash
+curl -O https://gist.githubusercontent.com/shihtiy-tw/538624de9f45b717a4226b155c4706f5/raw/8f032e10499dfb4472c2727928d65c6438e3797b/ecr-builder.sh
+
+chmod a+x ecr-builder.sh
+
+sudo mv ecr-builder.sh /usr/local/bin
+```
