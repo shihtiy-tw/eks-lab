@@ -1,6 +1,6 @@
 # TODO: fix the schema path for neovim
 # NOTE: this current path is for vscode
-# yaml-language-server: $schema=./config/eksctl-schema.json
+# yaml-language-server: $schema=../config/eksctl-schema.json
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
@@ -9,10 +9,10 @@ metadata:
   region: ${EKS_CLUSTER_REGION}
   version: "1.29"
   tags: {
-    "auto-delete": "no",
-    "auto-stop": "no",
-    "karpenter.sh/discovery": "${EKS_CLUSTER_NAME}" # here, it is set to the cluster name
-  }
+      "auto-delete": "no",
+      "auto-stop": "no",
+      "karpenter.sh/discovery": "${EKS_CLUSTER_NAME}", # here, it is set to the cluster name
+    }
 
 # availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]
 availabilityZones: ${AZ_ARRAY}
@@ -24,13 +24,13 @@ iam:
   withOIDC: true
 
 addons:
-- name: vpc-cni # no version is specified so it deploys the default version
-  attachPolicyARNs:
-    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
-- name: coredns
-  version: latest # auto discovers the latest available
-- name: kube-proxy
-  version: latest
+  - name: vpc-cni # no version is specified so it deploys the default version
+    attachPolicyARNs:
+      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+  - name: coredns
+    version: latest # auto discovers the latest available
+  - name: kube-proxy
+    version: latest
 
 fargateProfiles:
   - name: fargate
@@ -43,9 +43,9 @@ cloudWatch:
   clusterLogging:
     # enable specific types of cluster control plane logs
     logRetentionInDays: 180
-    enableTypes: ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+    enableTypes:
+      ["api", "audit", "authenticator", "controllerManager", "scheduler"]
     # all supported types: "api", "audit", "authenticator", "controllerManager", "scheduler"
     # supported special values: "*" and "all"
-
 #secretsEncryption:
-  #keyARN: ${SECRET_KEY_ARN}
+#keyARN: ${SECRET_KEY_ARN}
