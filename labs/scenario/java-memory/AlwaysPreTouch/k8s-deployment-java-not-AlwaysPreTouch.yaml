@@ -1,0 +1,63 @@
+---
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: java-17-dp-memory-not-AlwaysPreTouch
+  namespace: java
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-17-memory-not-AlwaysPreTouch
+  template:
+    metadata:
+      labels:
+        app: java-17-memory-not-AlwaysPreTouch
+    spec:
+      containers:
+        - name: java
+          image: openjdk:17
+          resources:
+            # requests:
+            #   memory: "1024Mi"
+            #   cpu: "2"
+            limits:
+              memory: "2048Mi"
+              cpu: "500m"
+          command: ["java"]
+          args:
+            - -XX:NativeMemoryTracking=detail
+            - -XX:+UseContainerSupport
+            # Allocating physical memory for the entire initial java heap
+            # - -XX:+AlwaysPreTouch
+            - -Xms512m
+            - -Xmx2048m
+            - /code/Main.java
+          volumeMounts:
+            - name: java-code-memory-not-AlwaysPreTouch
+              mountPath: "/code"
+      volumes:
+        - name: java-code-memory-not-AlwaysPreTouch
+          configMap:
+            name: java-code-memory-not-AlwaysPreTouch
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: java-code-memory-not-not-AlwaysPreTouch
+  namespace: java
+data:
+  Main.java: |-
+    public class Main {
+      public static void main(String[] args) {
+        System.out.println("Hello World");
+        while (true) {
+          ByteBuffer.allocateDirect(random.nextInt(10000));
+        }
+        try {
+            Thread.currentThread().join();
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+      }
+    }
