@@ -1,0 +1,45 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: EKS-Lab-1-29-minimal
+  region: us-east-2
+  version: '1.29'
+  tags:
+    auto-delete: 'no'
+    auto-stop: 'no'
+    karpenter.sh/discovery: 'EKS-Lab-1-29-minimal'
+# availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]
+availabilityZones: ["us-east-2a","us-east-2b","us-east-2c"]
+vpc:
+  cidr: 192.167.0.0/16
+iam:
+  withOIDC: true
+addons:
+  - name: vpc-cni  # no version is specified so it deploys the default version
+    attachPolicyARNs:
+      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+  - name: coredns
+    version: latest  # auto discovers the latest available
+  - name: kube-proxy
+    version: latest
+fargateProfiles:
+  - name: fargate
+    selectors:
+      # All workloads in the "default" Kubernetes namespace will be
+      # scheduled onto Fargate:
+      - namespace: fargate
+cloudWatch:
+  clusterLogging:
+    # enable specific types of cluster control plane logs
+    logRetentionInDays: 180
+    # all supported types: "api", "audit", "authenticator", "controllerManager", "scheduler"
+    # supported special values: "*" and "all"
+    enableTypes:
+      - api
+      - audit
+      - authenticator
+      - controllerManager
+      - scheduler
+# secretsEncryption:
+# keyARN: 
