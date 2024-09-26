@@ -62,7 +62,7 @@ if helm repo update eks; then
   echo -e "${GREEN}EKS Charts repo updated successfully.${NC}"
 else
   echo -e "${RED}Failed to update EKS Charts repo.${NC}"
-  exit
+  exit 0
 fi
 
 # Step 3: Create IAM policy
@@ -72,7 +72,7 @@ if ! aws iam list-policies --query "Policies[].[PolicyName,UpdateDate]" --output
     echo -e "${GREEN}IAM policy created successfully.${NC}"
   else
     echo -e "${RED}Failed to create IAM policy.${NC}"
-    exit
+    exit 0
   fi
 else
   echo -e "${GREEN}IAM policy already exists.${NC}"
@@ -91,7 +91,7 @@ if eksctl create iamserviceaccount \
   echo -e "${GREEN}IAM service account created successfully.${NC}"
 else
   echo -e "${RED}Failed to create IAM service account.${NC}"
-  exit
+  exit 0
 fi
 
 # Step 5: Apply CRDs
@@ -100,7 +100,7 @@ if kubectl apply -k "github.com/aws/eks-charts//stable/aws-load-balancer-control
   echo -e "${GREEN}CRDs applied successfully.${NC}"
 else
   echo -e "${RED}Failed to apply CRDs.${NC}"
-  exit
+  exit 0
 fi
 
 # Step 6: Check if aws-load-balancer-controller is installed
@@ -126,7 +126,7 @@ else
     echo -e "${GREEN}aws-load-balancer-controller installed/upgraded successfully.${NC}"
   else
     echo -e "${RED}Failed to install/upgrade aws-load-balancer-controller.${NC}"
-    exit
+    exit 0
   fi
 fi
 
@@ -136,5 +136,5 @@ if helm list --all-namespaces --filter aws-load-balancer-controller; then
   echo -e "${GREEN}aws-load-balancer-controller listed successfully.${NC}"
 else
   echo -e "${RED}Failed to list aws-load-balancer-controller.${NC}"
-  exit
+  exit 0
 fi
