@@ -1,5 +1,7 @@
 #!/bin/bash
 # reference: https://gist.github.com/vincentclaes/f587ba84bf116ed39d2841e49387f6c5
+# Usage: ecr-builder <image name> <region>
+# Example: ecr-builder java us-east-1
 
 #!/bin/bash
 
