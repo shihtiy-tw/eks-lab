@@ -1,102 +1,103 @@
 ---
-apiVersion: 'eksctl.io/v1alpha5'
-kind: 'ClusterConfig'
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
 metadata:
-  name: '${EKS_CLUSTER_NAME}'
-  region: '${EKS_CLUSTER_REGION}'
-  version: '1.29'
-  tags:
-    auto-delete: 'no'
-    auto-stop: 'no'
-    karpenter.sh/discovery: 'EKS-Lab-1-29-minimal'
+  name: ${EKS_CLUSTER_NAME}
+  region: ${EKS_CLUSTER_REGION}
+version: '${CLUSTER_VERSION}'
+tags:
+  auto-delete: 'no'
+  auto-stop: 'no'
+  karpenter.sh/discovery: 'EKS-Lab-1-29-minimal'
 # availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]
-availabilityZones: '${AZ_ARRAY}'
+---
+availabilityZones: ${AZ_ARRAY}
 vpc:
-  cidr: '192.167.0.0/16'
+  cidr: 192.167.0.0/16
 karpenter:
-  version: 'v0.27.1'
+  version: v0.27.1
   createServiceAccount: true  # default is false
   # adds all required policies and rules for supporting Spot Interruption Queue, default is false
   # withSpotInterruptionQueue: true
 iamIdentityMappings:
-  - arn: '${IAM_USER}'
+  - arn: ${IAM_USER}
     groups:
-      - 'system:masters'
-    username: 'admin'
+      - system:masters
+    username: admin
     noDuplicateARNs: true  # prevents shadowing of ARNs
 iam:
   withOIDC: true
   serviceAccounts:
     - metadata:
-        name: 's3-reader'
+        name: s3-reader
         # if no namespace is set, "default" will be used;
-        # the namespace will be created if it doesn't exist already
-        namespace: 'backend-apps'
+        # the namespace will be created if it doesnt exist already
+        namespace: backend-apps
       attachPolicyARNs:
-        - 'arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess'
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
     - metadata:
-        name: 'aws-load-balancer-controller'
-        namespace: 'kube-system'
+        name: aws-load-balancer-controller
+        namespace: kube-system
       wellKnownPolicies:
         awsLoadBalancerController: true
     - metadata:
-        name: 'ebs-csi-controller-sa'
-        namespace: 'kube-system'
+        name: ebs-csi-controller-sa
+        namespace: kube-system
       wellKnownPolicies:
         ebsCSIController: true
     - metadata:
-        name: 'efs-csi-controller-sa'
-        namespace: 'kube-system'
+        name: efs-csi-controller-sa
+        namespace: kube-system
       wellKnownPolicies:
         efsCSIController: true
     - metadata:
-        name: 'external-dns'
-        namespace: 'kube-system'
+        name: external-dns
+        namespace: kube-system
       wellKnownPolicies:
         externalDNS: true
     - metadata:
-        name: 'cert-manager'
-        namespace: 'cert-manager'
+        name: cert-manager
+        namespace: cert-manager
       wellKnownPolicies:
         certManager: true
     - metadata:
-        name: 'build-service'
-        namespace: 'ci-cd'
+        name: build-service
+        namespace: ci-cd
       wellKnownPolicies:
         imageBuilder: true
     - metadata:
-        name: 'cache-access'
-        namespace: 'backend-apps'
-        labels: {aws-usage: 'application'}
+        name: cache-access
+        namespace: backend-apps
+        labels: {aws-usage: application}
       attachPolicyARNs:
-        - 'arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess'
-        - 'arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess'
+        - arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess
 addons:
-  - name: 'vpc-cni'  # no version is specified so it deploys the default version
+  - name: vpc-cni  # no version is specified so it deploys the default version
     attachPolicyARNs:
-      - 'arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy'
-  - name: 'coredns'
-    version: 'latest'  # auto discovers the latest available
-  - name: 'kube-proxy'
-    version: 'latest'
-  - name: 'aws-ebs-csi-driver'
+      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+  - name: coredns
+    version: latest  # auto discovers the latest available
+  - name: kube-proxy
+    version: latest
+  - name: aws-ebs-csi-driver
     wellKnownPolicies:  # add IAM and service account
       ebsCSIController: true
-  - name: 'eks-pod-identity-agent'
-    version: 'latest'
-  - name: 'amazon-cloudwatch-observability'
-    version: 'latest'
-  - name: 'aws-efs-csi-driver'
-    version: 'latest'
+  - name: eks-pod-identity-agent
+    version: latest
+  - name: amazon-cloudwatch-observability
+    version: latest
+  - name: aws-efs-csi-driver
+    version: latest
     useDefaultPodIdentityAssociations: true
-  - name: 'snapshot-controller'
-    version: 'latest'
+  - name: snapshot-controller
+    version: latest
 fargateProfiles:
-  - name: 'fargate'
+  - name: fargate
     selectors:
       # All workloads in the "default" Kubernetes namespace will be
       # scheduled onto Fargate:
-      - namespace: 'fargate'
+      - namespace: fargate
 cloudWatch:
   clusterLogging:
     # enable specific types of cluster control plane logs
