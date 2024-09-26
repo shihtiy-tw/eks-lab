@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ebs-xfs-claim
+  namespace: ebs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ebs-xfs-sc
+  resources:
+    requests:
+      storage: 4Gi
