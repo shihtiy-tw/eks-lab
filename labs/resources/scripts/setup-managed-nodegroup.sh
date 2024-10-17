@@ -7,6 +7,7 @@ source "$PWD"/config/.env
 
 export NODEGROUP_CONFIG="${4:-on-demand}"
 export NODEGROUP_SIZE="${5:-m5.large}"
+# TODO: change the eksctil file as eksctl-*.yaml for schema
 export NODEGROUP_FILE="$PWD/versions/$(echo "$CLUSTER_FILE_LOCATION")/${EKS_CLUSTER_NAME}-${EKS_CLUSTER_REGION}-managed-nodegroup-${NODEGROUP_CONFIG}.yaml"
 
 # ANSI color codes

@@ -23,3 +23,5 @@ $ tree
 
 - [guessi/eks-integrations-quick-start](https://github.com/guessi/eks-integrations-quick-start)
 - [guessi/eks-tutorials](https://github.com/guessi/eks-tutorials)
+
+<!-- TODO: Add pre-commit for aws account and credential

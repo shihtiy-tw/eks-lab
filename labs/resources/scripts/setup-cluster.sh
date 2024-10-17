@@ -5,6 +5,7 @@ source "$PWD"/scripts/config.sh "$1" "$2" "$3"
 source "$PWD"/config/.env
 
 export CLUSTER_FILE_LOCATION="$(echo "$1"| sed 's/\./-/')"
+# TODO: change the eksctil file as eksctl-*.yaml for schema
 export CLUSTER_FILE="$PWD/versions/$(echo "$CLUSTER_FILE_LOCATION")/${EKS_CLUSTER_NAME}-${EKS_CLUSTER_REGION}.yaml"
 
 mkdir -p "$PWD/versions/""$(echo "$CLUSTER_FILE_LOCATION")"
