@@ -1,10 +1,10 @@
 # Ignore everything by default
 *
 
-**/versions/
-
 # Don't ignore directories (so we can look inside them, for other files)
 !*/
+
+versions
 
 # Don't ignore these
 !*.yaml
@@ -12,7 +12,9 @@
 !*.java
 !Dockerfile*
 !*.yml
+!*.html
 !*.json
 !*.sh
 !.gitattributes
 !.gitignore
+!Makefile
