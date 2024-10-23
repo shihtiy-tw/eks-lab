@@ -28,7 +28,7 @@ printf "${GREEN}%-20s${NC}%s\n" "Cluster YAML File:" "$CLUSTER_FILE"
 printf "${BLUE}--------------------------------${NC}\n"
 
 
-cat "$PWD/clusters/cluster-$CLUSTER_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${EKS_CLUSTER_REGION},${CLUSTER_VERSION},${AZ_ARRAY},${IAM_USER},${SECRET_KEY_ARN}' > "$CLUSTER_FILE"
+cat "$PWD/clusters/eksctl-cluster-$CLUSTER_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${EKS_CLUSTER_REGION},${CLUSTER_VERSION},${AZ_ARRAY},${IAM_USER},${SECRET_KEY_ARN}' > "$CLUSTER_FILE"
 
 # Capture both stdout and stderr, and store the exit status
 printf "${BLUE}Validating the template...${NC}\n"
