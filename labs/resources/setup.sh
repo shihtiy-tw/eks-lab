@@ -1,6 +1,7 @@
 #!/bin/bash
 # ./setup.sh cluster 1.29 us-west-1 minimal
 # ./setup.sh managed-nodegroup 1.29 us-west-1 minimal on-demand m5.large
+# ./setup.sh managed-nodegroup 1.29 us-west-1 minimal custom-ami m5.large
 # ./setup.sh nodegroup 1.29 us-west-1 minimal on-demand m5.large
 
 # Color codes

@@ -5,16 +5,16 @@ if [ $# -eq 0 ]; then
     echo "No arguments provided. Using default values."
 else
     # Set EKS_CLUSTER_NAME if provided
-    if [ -n "$1" ]; then
-        EKS_CLUSTER_NAME="$(echo $1 | sed 's/^/EKS-Lab-/; s/\./-/')"
+    if [ "$1" != "" ]; then
+        EKS_CLUSTER_NAME="$(echo "$1" | sed 's/^/EKS-Lab-/; s/\./-/')"
     fi
 
     # Set EKS_CLUSTER_REGION if provided
-    if [ -n "$2" ]; then
+    if [ "$2" != "" ]; then
         EKS_CLUSTER_REGION="$2"
     fi
      # Set CLUSTER_CONFIG if provided
-    if [ -n "$3" ]; then
+    if [ "$3" != "" ]; then
         case "$3" in
             full)
                 CLUSTER_CONFIG="full"
@@ -38,19 +38,29 @@ fi
 
 # Get AZs for the specified region in the desired format
 AZ_ARRAY=$(aws ec2 describe-availability-zones \
-    --region $EKS_CLUSTER_REGION \
+    --region "$EKS_CLUSTER_REGION" \
     --query 'AvailabilityZones[?State==`available`].ZoneName' \
     --output json | sed 's/\[/["/;s/\]/"]/' | sed 's/,/", "/g' | tr -d '\n\r\t ')
-
 
 # Set default values if not provided
 export EKS_CLUSTER_REGION=${EKS_CLUSTER_REGION:-"us-east-1"}
 export EKS_CLUSTER_NAME=${EKS_CLUSTER_NAME:-"EKS-Lab"}-${CLUSTER_CONFIG}
 export CLUSTER_CONFIG=${CLUSTER_CONFIG:-"minimal"}
-export AZ_ARRAY=$(echo "${AZ_ARRAY:-'["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]'}" | sed 's/""/"/g')
 export CLUSTER_VERSION="${1:-1.30}"
-export CLUSTER_FILE_LOCATION="$(echo $CLUSTER_VERSION| sed 's/\./-/')"
+export CLUSTER_FILE_LOCATION="$(echo "$CLUSTER_VERSION"| sed 's/\./-/')"
 
+# TODO: fix the AZ list by comparing the AZ_ARRAY with non-supporting AZ for EKS
+# Define the array to compare against
+COMPARE_ARRAY='["us-east-1e", "eu-west-2"]'
+
+# Update AZ_ARRAY by removing elements that exist in COMPARE_ARRAY
+export AZ_ARRAY=$(echo "${AZ_ARRAY:-'["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]'}" |
+                  sed 's/""/"/g' |
+                  jq -c --argjson compare "$COMPARE_ARRAY" '
+                    . | fromjson |
+                    map(select(. as $item | $compare | index($item) | not)) |
+                    tojson
+                  ')
 
 echo "Configuring cluster $EKS_CLUSTER_NAME in region $EKS_CLUSTER_REGION with AZs: $AZ_ARRAY"
 
