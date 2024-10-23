@@ -1,0 +1,3 @@
+[submodule "labs/resources/custom-amis"]
+	path = labs/resources/custom-amis
+	url = git@github.com:shihtiy-tw/amazon-eks-custom-amis.git
