@@ -1,0 +1,18 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: aws-logging
+  namespace: aws-observability
+data:
+  output.conf: |-
+    [OUTPUT]
+      Name  es
+      Match *
+      Host  $HOST
+      Port  443
+      Index $INDEX
+      Type  $TYPE
+      AWS_Auth On
+      AWS_Region $REGION
+      tls   On

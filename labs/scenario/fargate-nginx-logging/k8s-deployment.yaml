@@ -2,15 +2,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test
-  namespace: default
+  name: fargate-nginx
+  namespace: fargate
   labels:
     test: OK
 spec:
   selector:
     matchLabels:
       app: nginx
-  replicas: 3  # tells deployment to run 2 pods matching the template
+  replicas: 3
   template:
     metadata:
       labels:
