@@ -13,10 +13,13 @@ managedNodeGroups:
     instanceType: ${NODEGROUP_SIZE}
     desiredCapacity: 1
     amiFamily: AmazonLinux2
+<<<<<<< HEAD
     ami: ${CUSTOM_AMI}
     overrideBootstrapCommand: |
       #!/bin/bash
       /etc/eks/bootstrap.sh ${EKS_CLUSTER_NAME}
+=======
+>>>>>>> int-karpenter
     iam:
       attachPolicyARNs:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
