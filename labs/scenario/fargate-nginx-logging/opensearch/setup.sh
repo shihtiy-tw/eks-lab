@@ -4,7 +4,7 @@ CURRENT_CONTEXT=$(kubectl config current-context)
 EKS_CLUSTER_NAME=$(echo "$CURRENT_CONTEXT" | awk -F: '{split($NF,a,"/"); print a[2]}')
 AWS_REGION=$(echo "$CURRENT_CONTEXT" | awk -F: '{print $4}')
 AWS_ACCOUNT_ID=$(echo "$CURRENT_CONTEXT" | awk -F: '{print $5}')
-POLICY_NAME=eks-fargate-logging-policy-cloudwatch
+POLICY_NAME=eks-fargate-logging-policy-opensearch
 POLICY_URL=https://raw.githubusercontent.com/aws-samples/amazon-eks-fluent-logging-examples/mainline/examples/fargate/amazon-elasticsearch/permissions.json
 
 ROLE_NAME="$(eksctl get fargateprofile --cluster "$EKS_CLUSTER_NAME" --region "$AWS_REGION" --output json | jq -r '.[0].podExecutionRoleARN | split("/") | last')"
