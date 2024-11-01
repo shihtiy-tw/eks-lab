@@ -5,6 +5,7 @@ metadata:
   name: aws-logging
   namespace: aws-observability
 data:
+  flb_log_cw: "true"
   output.conf: |-
     [OUTPUT]
       Name  es
@@ -16,3 +17,5 @@ data:
       AWS_Auth On
       AWS_Region $REGION
       tls   On
+      Suppress_Type_Name On
+# https://docs.fluentbit.io/manual/pipeline/outputs/elasticsearch#action-metadata-contains-an-unknown-parameter-type
