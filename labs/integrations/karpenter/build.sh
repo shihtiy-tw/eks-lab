@@ -15,10 +15,11 @@ print_info() {
 # Function to print script usage information
 print_usage() {
     echo -e "${YELLOW}Usage:${NC}"
-    echo -e "${GREEN}./build.sh${NC}                     - List all available chart versions"
-    echo -e "${GREEN}./build.sh latest${NC}              - Install/update to the latest chart version"
+    echo -e "${GREEN}./build.sh${NC}                                - List all available chart versions"
+    echo -e "${GREEN}./build.sh latest${NC}                         - Install/update to the latest chart version"
     echo -e "${GREEN}./build.sh <chart version> <app version>${NC}  - Install/update to a specific chart version"
-    echo -e "${GREEN}Example: ./build.sh 1.0.7 1.0.7${NC}"
+    echo -e "${YELLOW}Example:${NC}"
+    echo -e "${GREEN}./build.sh 1.0.7 1.0.7${NC}"
     echo -e "\n"
 }
 
@@ -65,9 +66,12 @@ echo -e "\n${YELLOW}======================================${NC}\n"
 
 # Version selection logic
 if [ "$1" = "latest" ]; then
-  # TODO: remove hardcoded version
-  APP_VERSION="1.0.7"
-  CHART_VERSION="1.0.7"
+  # Get the chart information
+  CHART_INFO=$(helm show chart oci://public.ecr.aws/karpenter/karpenter)
+
+  # Extract appVersion and version
+  APP_VERSION=$(echo "$CHART_INFO" | grep '^appVersion:' | awk '{print $2}')
+  CHART_VERSION=$(echo "$CHART_INFO" | grep '^version:' | awk '{print $2}')
   echo -e "${GREEN}Using latest helm chart version: ${CHART_VERSION}${NC}"
   echo -e "${GREEN}Using latest helm app version: ${APP_VERSION}\n${NC}"
 else
