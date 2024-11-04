@@ -8,7 +8,7 @@ metadata:
   tags:
     auto-delete: 'no'
     auto-stop: 'no'
-    karpenter.sh/discovery: 'EKS-Lab-1-29-minimal'
+    karpenter.sh/discovery: '${EKS_CLUSTER_NAME}'
 # availabilityZones: ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]
 availabilityZones: ${AZ_ARRAY}
 vpc:
