@@ -1,0 +1,19 @@
+---
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: default
+spec:
+  amiFamily: AL2  # Amazon Linux 2
+  amiSelectorTerms:
+    # family is not supported, must be one of the following: 'al2', 'al2023', 'bottlerocket', 'windows2019', 'windows2022'
+    - alias: "al2@${ALIAS}"
+    # - id: "${ARM_AMI_ID}"
+    # - name: "amazon-eks-node-${K8S_VERSION}-*"  # <- automatically upgrade when a new AL2 EKS Optimized AMI is released. This is unsafe for production workloads. Validate AMIs in lower environments before deploying them to production.
+  role: "KarpenterNodeRole-${EKS_CLUSTER_NAME}"  # replace with your cluster name
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "${EKS_CLUSTER_NAME}"  # replace with your cluster name
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "${EKS_CLUSTER_NAME}"  # replace with your cluster name
