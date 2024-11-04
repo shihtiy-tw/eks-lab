@@ -144,3 +144,59 @@ aws cloudformation deploy \
   --parameter-overrides "ClusterName=${EKS_CLUSTER_NAME}"
 
 rm -vf cloudformation.yaml # cleanup
+
+echo "[debug] creating mapRole for aws-auth"
+eksctl create iamidentitymapping \
+  --username "system:node:{{EC2PrivateDNSName}}" \
+  --region "$AWS_REGION" \
+  --cluster "$EKS_CLUSTER_NAME" \
+  --arn "arn:aws:iam::${AWS_ACCOUNT_ID}:role/KarpenterNodeRole-${EKS_CLUSTER_NAME}" \
+  --group "system:bootstrappers" \
+  --group "system:nodes"
+
+echo "[debug] creating IAM Roles for Service Accounts"
+eksctl create iamserviceaccount \
+  --namespace "$NAMESPACE" \
+  --region "$AWS_REGION" \
+  --cluster "$EKS_CLUSTER_NAME" \
+  --name "$SERVICE_ACCOUNT_NAME" \
+  --role-name "$IAM_ROLE_NAME" \
+  --attach-policy-arn arn:aws:iam::"$AWS_ACCOUNT_ID:policy/$IAM_POLICY_NAME" \
+  --approve \
+  --override-existing-serviceaccounts
+
+echo "[debug] creating Custom Resource Definition (CRDs)"
+helm upgrade --install karpenter-crd oci://public.ecr.aws/karpenter/karpenter-crd --version "$CHART_VERSION" --namespace "$NAMESPACE" --create-namespace
+
+echo "[debug] detecting Helm resource existance"
+helm list --all-namespaces | grep -q "$NAMESPACE"
+
+# https://github.com/aws/karpenter/pull/3880
+echo "[debug] ensure helm registry is logout"
+helm registry logout public.ecr.aws
+
+echo "[debug] setup karpenter/karpenter"
+
+helm upgrade \
+  --namespace "$NAMESPACE" \
+  --create-namespace \
+  --install karpenter \
+  --version "$CHART_VERSION" \
+  oci://public.ecr.aws/karpenter/karpenter \
+    --set serviceAccount.create=false \
+    --set serviceAccount.name="$SERVICE_ACCOUNT_NAME" \
+    --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"="arn:aws:iam::${AWS_ACCOUNT_ID}:role/${IAM_ROLE_NAME}" \
+    --set settings.clusterName="$EKS_CLUSTER_NAME" \
+    --set settings.interruptionQueue="$EKS_CLUSTER_NAME" \
+    --set settings.clusterEndpoint="$CLUSTER_ENDPOINT" \
+    --set controller.resources.requests.cpu=500m \
+    --set controller.resources.requests.memory=500Mi \
+    --set controller.resources.limits.cpu=1 \
+    --set controller.resources.limits.memory=1Gi \
+    --wait
+
+echo "[debug] listing installed"
+helm list --all-namespaces --filter karpenter
+
+echo "[debug] post-install reminders"
+echo "Before applying CRDs, you should check for karpenter discovery tags definitions."
