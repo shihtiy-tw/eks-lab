@@ -22,7 +22,7 @@ spec:
   backends:
     - virtualService:
         virtualServiceRef:
-          name: my-service-a
+          name: my-service-b
           namespace: my-apps
   logging:
     accessLog:
