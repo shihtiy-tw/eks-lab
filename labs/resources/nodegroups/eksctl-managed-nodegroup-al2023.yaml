@@ -1,0 +1,33 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: ${EKS_CLUSTER_NAME}
+  version: "${CLUSTER_VERSION}"
+  region: ${EKS_CLUSTER_REGION}
+  tags:
+    auto-delete: "no"
+    auto-stop: "no"
+managedNodeGroups:
+  - name: managed-nodegroup-${NODEGROUP_CONFIG}
+    instanceType: ${NODEGROUP_SIZE}
+    desiredCapacity: 1
+    amiFamily: AmazonLinux2023
+    iam:
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        # (Optional) Only required if you need "EC2 Instance Connect"
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        # (Optional) Only required if you are using "SSM"
+        - arn:aws:iam::aws:policy/AmazonSSMPatchAssociation
+        # (Optional) Only required if you have "Amazon CloudWatch Observability" setup
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+    ssh:
+      allow: false
+    tags:
+      auto-delete: 'no'
+      auto-stop: 'no'
+      k8s.io/cluster-autoscaler/${EKS_CLUSTER_NAME}: 'owned'
+      k8s.io/cluster-autoscaler/enabled: 'true'
