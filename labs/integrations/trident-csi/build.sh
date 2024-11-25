@@ -120,6 +120,8 @@ fi
 
 
 # Step 5: Apply CRDs
+# https://aws.amazon.com/blogs/storage/run-containerized-applications-efficiently-using-amazon-fsx-for-netapp-ontap-and-amazon-eks/
+# FIX: if CRD already exist, skip the installation
 echo -e "${YELLOW}\nStep 5: Install the Kubernetes Snapshot CRDs and Snapshot Controller...${NC}"
 
 git clone https://github.com/kubernetes-csi/external-snapshotter
@@ -143,12 +145,13 @@ fi
 if kubectl kustomize deploy/kubernetes/csi-snapshotter | kubectl create -f -; then
   echo -e "${GREEN}CRDs applied successfully.\n${NC}"
 else
-  echo -e "${RED}Failed to apply CRDs.${NC}"
+  echo -e "${RED}Failed to create csi-snapshotter.${NC}"
   exit 0
 fi
 
 cd .. && rm -rf external-snapshotter/
 
+# https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy-helm.html
 check_controller_installation() {
     local expected_chart_version="$1"
     local expected_app_version="$2"
