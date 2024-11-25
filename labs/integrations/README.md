@@ -16,3 +16,4 @@
 | appmesh-controller              |      | V      |            | V       |
 | karpenter                       | V    | V      |            |         |
 | amazon-cloudwatch-observability |      | V      | V          |         |
+| trident-csi                     | V    |        |            | V       |
