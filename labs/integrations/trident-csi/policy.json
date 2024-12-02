@@ -1,0 +1,25 @@
+{
+  "Statement": [
+    {
+      "Action": [
+        "fsx:DescribeFileSystems",
+        "fsx:DescribeVolumes",
+        "fsx:CreateVolume",
+        "fsx:RestoreVolumeFromSnapshot",
+        "fsx:DescribeStorageVirtualMachines",
+        "fsx:UntagResource",
+        "fsx:UpdateVolume",
+        "fsx:TagResource",
+        "fsx:DeleteVolume"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": "secretsmanager:GetSecretValue",
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ],
+  "Version": "2012-10-17"
+}

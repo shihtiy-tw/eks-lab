@@ -27,6 +27,12 @@ CHART_NAME="trident-operator"
 CHART_NAME_STRING="Trident Operator"
 REPO_NAME="netapp-trident"
 REPO_NAME_STRING="NetApp Trident"
+IAM_POLICY_NAME="AmazonFSxNCSIDriverPolicy"
+IAM_ROLE_NAME="AmazonEKS_FSxN_CSI_DriverRole"
+SERVICE_ACCOUNT_NAME="trident-controller"
+
+export CP="AWS"
+export CI="'eks.amazonaws.com/role-arn: arn:aws:iam::<accountID>:role/<AmazonEKS_FSxN_CSI_DriverRole>'"
 
 # Get cluster version
 CLUSTER_VERSION=$(aws eks describe-cluster --name "$EKS_CLUSTER_NAME" --region "$AWS_REGION" --output "json" | jq -r '.cluster.version')
@@ -48,8 +54,8 @@ print_info "EKS Cluster Version" "$CLUSTER_VERSION"
 # print_info "VPC ID" "$VPC_ID"
 print_info "AWS Account ID" "$AWS_ACCOUNT_ID"
 print_info "AWS Region" "$AWS_REGION"
-# print_info "IAM Policy Name" "$IAM_POLICY_NAME"
-# print_info "Service Account Name" "$SERVICE_ACCOUNT_NAME"
+print_info "IAM Policy Name" "$IAM_POLICY_NAME"
+print_info "Service Account Name" "$SERVICE_ACCOUNT_NAME"
 
 echo -e "\n${YELLOW}======================================${NC}\n"
 
@@ -183,7 +189,9 @@ check_controller_installation() {
               "$REPO_NAME/$CHART_NAME" \
               --create-namespace \
               --namespace "$NAMESPACE" \
-               --set tridentDebug=true; then
+              --set tridentDebug=true \
+              --set cloudProvider="$CP" \
+              --set cloudIdentity="$CI" ; then
               echo -e "${GREEN}$CHART_NAME_STRING installed/upgraded successfully.\n${NC}"
             else
               echo -e "${RED}Failed to install/upgrade $CHART_NAME_STRING.${NC}"
@@ -200,7 +208,9 @@ check_controller_installation() {
           "$REPO_NAME/$CHART_NAME" \
           --create-namespace \
           --namespace "$NAMESPACE" \
-           --set tridentDebug=true; then
+          --set tridentDebug=true \
+          --set cloudProvider="$CP" \
+          --set cloudIdentity="$CI" ; then
           echo -e "${GREEN}$CHART_NAME_STRING installed/upgraded successfully.\n${NC}"
         else
           echo -e "${RED}Failed to install/upgrade $CHART_NAME_STRING.${NC}"
@@ -208,6 +218,41 @@ check_controller_installation() {
         fi
     fi
 }
+
+# TODO: create IAM policy
+# TODO: add IRSA for trident-operator
+# https://docs.netapp.com/us-en/trident/trident-use/trident-fsx-iam-role.html
+#
+# Step 3: Create IAM policy
+echo -e "${YELLOW}Step 3: Creating IAM policy...${NC}"
+if ! aws iam list-policies --query "Policies[].[PolicyName,UpdateDate]" --output text | grep "$IAM_POLICY_NAME"; then
+  if aws iam create-policy --policy-name "$IAM_POLICY_NAME" --policy-document file://policy.json; then
+    echo -e "${GREEN}IAM policy created successfully.\n${NC}"
+  else
+    echo -e "${RED}Failed to create IAM policy.${NC}"
+    exit 0
+  fi
+else
+  echo -e "${GREEN}IAM policy already exists.\n${NC}"
+fi
+
+# Step 4: Create IAM service account
+echo -e "${YELLOW}Step 4: Creating IAM service account...${NC}"
+if eksctl create iamserviceaccount \
+  --namespace "$NAMESPACE" \
+  --region "$AWS_REGION" \
+  --cluster "$EKS_CLUSTER_NAME" \
+  --name "$SERVICE_ACCOUNT_NAME" \
+  --role-name AmazonEKS_FSxN_CSI_DriverRole \
+  --role-only \
+  --attach-policy-arn arn:aws:iam::"$AWS_ACCOUNT_ID:policy/$IAM_POLICY_NAME" \
+  --approve \
+  --override-existing-serviceaccounts; then
+  echo -e "${GREEN}IAM service account created successfully.\n${NC}"
+else
+  echo -e "${RED}Failed to create IAM service account.${NC}"
+  exit 0
+fi
 
 # Step 6: Check if $CHART_NAME_STRING is installed
 echo -e "${YELLOW}\nStep 6: Checking $CHART_NAME_STRING installation...${NC}"
