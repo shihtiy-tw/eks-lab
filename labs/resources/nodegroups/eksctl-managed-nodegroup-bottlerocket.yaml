@@ -7,7 +7,7 @@ metadata:
   region: ${EKS_CLUSTER_REGION}
   tags: {"auto-delete": "no", "auto-stop": "no"}
 managedNodeGroups:
-  - name: managed-nodegroup-${NODEGROUP_CONFIG}
+  - name: managed-nodegroup-${NODEGROUP_CONFIG}-${INSTANCE_TYPE}
     instanceType: ${NODEGROUP_SIZE}
     desiredCapacity: 1
     amiFamily: Bottlerocket

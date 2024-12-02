@@ -7,8 +7,10 @@ source "$PWD"/config/.env
 
 export NODEGROUP_CONFIG="${4:-on-demand}"
 export NODEGROUP_SIZE="${5:-m5.large}"
+export INSTANCE_TYPE="${NODEGROUP_SIZE//./}"
+
 # TODO: change the eksctil file as eksctl-*.yaml for schema
-export NODEGROUP_FILE="$PWD/versions/$(echo "$CLUSTER_FILE_LOCATION")/${EKS_CLUSTER_NAME}-${EKS_CLUSTER_REGION}-managed-nodegroup-${NODEGROUP_CONFIG}-${NODEGROUP_SIZE}.yaml"
+export NODEGROUP_FILE="$PWD/versions/$(echo "$CLUSTER_FILE_LOCATION")/${EKS_CLUSTER_NAME}-${EKS_CLUSTER_REGION}-managed-nodegroup-${NODEGROUP_CONFIG}-${INSTANCE_TYPE}.yaml"
 
 # ANSI color codes
 RED='\033[0;31m'
@@ -22,9 +24,9 @@ if [[ $NODEGROUP_CONFIG = "custom-ami" ]]; then
     --filters "Name=name,Values=eks-lab*-${CLUSTER_VERSION}-*" "Name=state,Values=available" \
     --query 'Images[*].ImageId' --output text)
 
-  cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE},${CUSTOM_AMI}' > "$NODEGROUP_FILE"
+  cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE},${CUSTOM_AMI},${INSTANCE_TYPE}' > "$NODEGROUP_FILE"
 else
-  cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE}' > "$NODEGROUP_FILE"
+  cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE},${INSTANCE_TYPE}' > "$NODEGROUP_FILE"
 fi
 
 # envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE}' < $(pwd)/nodegroups/managed-nodegroup-${NODEGROUP_CONFIG}.yaml
