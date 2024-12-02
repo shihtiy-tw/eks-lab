@@ -27,5 +27,8 @@ managedNodeGroups:
     bottlerocket:
       settings:
         motd: "Hello from eksctl!"
-    tags: {"auto-delete": "no", "auto-stop": "no", "k8s.io/cluster-autoscaler/${EKS_CLUSTER_NAME}": "owned",
-      "k8s.io/cluster-autoscaler/enabled": "true"}
+    tags:
+      auto-delete: 'no'
+      auto-stop: 'no'
+      k8s.io/cluster-autoscaler/${EKS_CLUSTER_NAME}: 'owned'
+      k8s.io/cluster-autoscaler/enabled: 'true'
