@@ -17,3 +17,5 @@
 | karpenter                       | V    | V      |            |         |
 | amazon-cloudwatch-observability |      | V      | V          |         |
 | trident-csi                     | V    |        |            | V       |
+| nvidia-gpu-operator             | V    |        |            |         |
+| nvidia-k8s-device-plugin        | V    |        |            |         |
