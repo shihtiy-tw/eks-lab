@@ -16,6 +16,19 @@ BLUE='\033[0;34m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
+if [[ $NODEGROUP_CONFIG = "custom-ami" ]]; then
+  # custom ami name: "eks-lab-amazon-eks-arm64-1.29-20241023145809"
+  export CUSTOM_AMI=$(aws ec2 describe-images \
+    --filters "Name=name,Values=eks-lab*-${CLUSTER_VERSION}-*" "Name=state,Values=available" \
+    --query 'Images[*].ImageId' --output text)
+
+  cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE},${CUSTOM_AMI}' > "$NODEGROUP_FILE"
+else
+  cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE}' > "$NODEGROUP_FILE"
+fi
+
+# envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE}' < $(pwd)/nodegroups/managed-nodegroup-${NODEGROUP_CONFIG}.yaml
+#
 printf "${BLUE}EKS Nodegroup Configuration Summary:\n"
 printf "${BLUE}--------------------------------${NC}\n"
 printf "${GREEN}%-20s${NC}%s\n" "Cluster Name:" "$EKS_CLUSTER_NAME"
@@ -28,19 +41,6 @@ printf "${GREEN}%-20s${NC}%s\n" "Nodegroup Size:" "$NODEGROUP_SIZE"
 printf "${GREEN}%-20s${NC}%s\n" "Nodegroup YAML File:" "$NODEGROUP_FILE"
 printf "${BLUE}--------------------------------${NC}\n"
 
-if [[ $NODEGROUP_CONFIG = "custom-ami" ]]; then
-  # custom ami name: "eks-lab-amazon-eks-arm64-1.29-20241023145809"
-  export CUSTOM_AMI=$(aws ec2 describe-images \
-    --filters "Name=name,Values=eks-lab*-${CLUSTER_VERSION}-*" "Name=state,Values=available" \
-    --query 'Images[*].ImageId' --output text)
-
-  cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE},${CUSTOM_AMI}' > "$NODEGROUP_FILE"
-else
-  cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE}' > "$NODEGROUP_FILE"
-fi
-
-cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE}' > "$NODEGROUP_FILE"
-# envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE}' < $(pwd)/nodegroups/managed-nodegroup-${NODEGROUP_CONFIG}.yaml
 
 # Capture both stdout and stderr, and store the exit status
 printf "${BLUE}Validating the template...${NC}\n"
