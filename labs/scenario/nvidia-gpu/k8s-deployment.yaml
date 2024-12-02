@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cuda
+  namespace: gpu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cuda
+  template:
+    metadata:
+      labels:
+        app: cuda
+    spec:
+      containers:
+        - name: cuda
+          image: nvidia/cuda:12.6.2-runtime-ubuntu24.04
+          command:
+            - "/bin/sh"
+            - "-c"
+          args:
+            - "nvidia-smi && tail -f /dev/null"
+          # resources:
+          #   limits:
+          #     nvidia.com/gpu: 1
