@@ -37,10 +37,10 @@ else
 fi
 
 # Get AZs for the specified region in the desired format
-AZ_ARRAY=$(aws ec2 describe-availability-zones \
-    --region "$EKS_CLUSTER_REGION" \
-    --query 'AvailabilityZones[?State==`available`].ZoneName' \
-    --output json | sed 's/\[/["/;s/\]/"]/' | sed 's/,/", "/g' | tr -d '\n\r\t ')
+# AZ_ARRAY=$(aws ec2 describe-availability-zones \
+#     --region "$EKS_CLUSTER_REGION" \
+#     --query 'AvailabilityZones[?State==`available`].ZoneName' \
+#     --output json | sed 's/\[/["/;s/\]/"]/' | sed 's/,/", "/g' | tr -d '\n\r\t ')
 
 # Set default values if not provided
 export EKS_CLUSTER_REGION=${EKS_CLUSTER_REGION:-"us-east-1"}
@@ -49,21 +49,4 @@ export CLUSTER_CONFIG=${CLUSTER_CONFIG:-"minimal"}
 export CLUSTER_VERSION="${1:-1.30}"
 export CLUSTER_FILE_LOCATION="$(echo "$CLUSTER_VERSION"| sed 's/\./-/')"
 
-# TODO: fix the AZ list by comparing the AZ_ARRAY with non-supporting AZ for EKS
-# Define the array to compare against
-COMPARE_ARRAY='["us-east-1e", "eu-west-2"]'
-
-# Update AZ_ARRAY by removing elements that exist in COMPARE_ARRAY
-export AZ_ARRAY=$(echo "${AZ_ARRAY:-'["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]'}" |
-                  sed 's/""/"/g' |
-                  jq -c --argjson compare "$COMPARE_ARRAY" '
-                    . | fromjson |
-                    map(select(. as $item | $compare | index($item) | not)) |
-                    tojson
-                  ')
-
 echo "Configuring cluster $EKS_CLUSTER_NAME in region $EKS_CLUSTER_REGION with AZs: $AZ_ARRAY"
-
-# You can now use $AZ_ARRAY in your configuration where needed
-# You could then use these AZs in your cluster configuration, for example:
-# eksctl create cluster --name $EKS_CLUSTER_NAME --region $EKS_CLUSTER_REGION --zones ${AZ_ARRAY[0]},${AZ_ARRAY[1]},${AZ_ARRAY[2]}
