@@ -1,0 +1,43 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: ${EKS_CLUSTER_NAME}
+  region: ${EKS_CLUSTER_REGION}
+  version: '${CLUSTER_VERSION}'
+  tags:
+    auto-delete: 'no'
+    auto-stop: 'no'
+    karpenter.sh/discovery: '${EKS_CLUSTER_NAME}'
+# availabilityZones: ${AZ_ARRAY}
+autoModeConfig:
+  # defaults to false
+  enabled: true
+  # optional, defaults to [general-purpose, system].
+  # To disable creation of nodePools, set it to the empty array ([]).
+  nodePools:
+    - general-purpose
+    - system
+  # optional, eksctl creates a new role if this is not supplied
+  # and nodePools are present.
+#  nodeRoleARN: ""
+vpc:
+  cidr: 192.167.0.0/16
+iam:
+  withOIDC: true
+# The cluster still need to setup CW logging with auto mode enabled:
+# Kubernetes API endpoint access will use default of {publicAccess=true, privateAccess=false} for cluster "EKS-Lab-1-31-auto" in "us-east-1"
+# CloudWatch logging will not be enabled for cluster "EKS-Lab-1-31-auto" in "us-east-1"
+# you can enable it with 'eksctl utils update-cluster-logging --enable-types={SPECIFY-YOUR-LOG-TYPES-HERE (e.g. all)} --region=us-east-1 --cluster=EKS-Lab-1-31-auto'
+cloudWatch:
+  clusterLogging:
+    # enable specific types of cluster control plane logs
+    logRetentionInDays: 180
+    # all supported types: "api", "audit", "authenticator", "controllerManager", "scheduler"
+    # supported special values: "*" and "all"
+    enableTypes:
+      - api
+      - audit
+      - authenticator
+      - controllerManager
+      - scheduler

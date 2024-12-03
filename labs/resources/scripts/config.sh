@@ -22,15 +22,18 @@ else
             minimal)
                 CLUSTER_CONFIG="minimal"
                 ;;
-            ipv6)
-                CLUSTER_CONFIG="ipv6"
+            auto)
+                CLUSTER_CONFIG="auto"
                 ;;
-            private)
-                CLUSTER_CONFIG="private"
-                ;;
+            # ipv6)
+            #     CLUSTER_CONFIG="ipv6"
+            #     ;;
+            # private)
+            #     CLUSTER_CONFIG="private"
+            #     ;;
             *)
-                echo "Invalid cluster configuration option. Using default."
-                CLUSTER_CONFIG="minimal"
+                echo "Invalid cluster configuration option. Exit the script. Please check if the cluster config is created or setup."
+                exit
                 ;;
         esac
     fi
