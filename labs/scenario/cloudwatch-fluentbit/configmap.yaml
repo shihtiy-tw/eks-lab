@@ -1,0 +1,31 @@
+apiVersion: v1
+data:
+  cluster.name: EKS-Cluster
+  http.port: "2020"
+  http.server: "On"
+  logs.region: us-east-1
+  read.head: "Off"
+  read.tail: "On"
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2021-12-29T09:20:52Z"
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:cluster.name: {}
+        f:http.port: {}
+        f:http.server: {}
+        f:logs.region: {}
+        f:read.head: {}
+        f:read.tail: {}
+    manager: kubectl
+    operation: Update
+    time: "2021-12-29T09:20:52Z"
+  name: fluent-bit-cluster-info
+  namespace: amazon-cloudwatch
+  resourceVersion: "188101480"
+  selfLink: /api/v1/namespaces/amazon-cloudwatch/configmaps/fluent-bit-cluster-info
+  uid: aa4f8ef6-053b-4c15-93e1-ffd0d2eb6770

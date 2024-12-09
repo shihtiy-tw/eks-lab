@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fluent-bit
+  namespace: amazon-cloudwatch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fluent-bit-role
+rules:
+  - nonResourceURLs:
+      - /metrics
+    verbs:
+      - get
+  - apiGroups: [""]
+    resources:
+      - namespaces
+      - pods
+      - pods/logs
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: fluent-bit-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: fluent-bit-role
+subjects:
+  - kind: ServiceAccount
+    name: fluent-bit
+    namespace: amazon-cloudwatch
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-config
+  namespace: amazon-cloudwatch
+  labels:
+    k8s-app: fluent-bit
+data:
+  fluent-bit.conf: |
+    [INPUT]
+        Name                tail
+        Tag                 application.*
+        Path                /data/*.txt
+        Mem_Buf_Limit       50MB
+        Skip_Long_Lines     On
+        Refresh_Interval    10
+        Rotate_Wait         30
+
+    #[FILTER]
+        #Name                kubernetes
+        #Match               application.*
+        #Kube_URL            https://kubernetes.default.svc:443
+        #Kube_Tag_Prefix     application.var.log.containers.
+        #Merge_Log           On
+        #Merge_Log_Key       log_processed
+        #K8S-Logging.Parser  On
+        #K8S-Logging.Exclude Off
+        #Labels              Off
+        #Annotations         Off
+
+    [OUTPUT]
+        Name                cloudwatch_logs
+        Match               application.*
+        region              ${AWS_REGION}
+        log_group_name      /aws/containerinsights/${CLUSTER_NAME}/dataoutput
+        log_stream_prefix   ${HOST_NAME}-
+        auto_create_group   true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: amazon-cloudwatch
+  name: app
+spec:
+  containers:
+  - name: app
+    image: centos
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 5; done"]
+    volumeMounts:
+    - name: persistent-storage
+      mountPath: /data
+  - name: fluent-bit
+    image: amazon/aws-for-fluent-bit:2.10.0
+    imagePullPolicy: Always
+    env:
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-cluster-info
+              key: logs.region
+        - name: CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-cluster-info
+              key: cluster.name
+        - name: HTTP_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-cluster-info
+              key: http.server
+        - name: HTTP_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-cluster-info
+              key: http.port
+        - name: READ_FROM_HEAD
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-cluster-info
+              key: read.head
+        - name: READ_FROM_TAIL
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-cluster-info
+              key: read.tail
+        - name: HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: CI_VERSION
+          value: "k8s/1.3.8"
+    resources:
+        limits:
+          memory: 200Mi
+        requests:
+          cpu: 500m
+          memory: 100Mi
+    volumeMounts:
+    # Please don't change below read-only permissions
+    - name: persistent-storage
+      mountPath: /data
+    - name: fluent-bit-config
+      mountPath: /fluent-bit/etc/
+  serviceAccountName: fluent-bit
+
+  volumes:
+  - name: persistent-storage
+    persistentVolumeClaim:
+      claimName: pod-fluentbit-pvc
+  - name: fluent-bit-config
+    configMap:
+      name: fluent-bit-config
+
