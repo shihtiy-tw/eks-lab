@@ -124,6 +124,21 @@ if ! aws iam list-policies --query "Policies[].[PolicyName,UpdateDate]" --output
   fi
 else
   echo -e "${GREEN}IAM policy already exists.\n${NC}"
+
+  IAM_POLICY_ARN=$(aws iam list-policies \
+    --query "Policies[?PolicyName=='$IAM_POLICY_NAME'].Arn" \
+    --output text)
+
+  if aws iam create-policy-version  \
+    --policy-arn "$IAM_POLICY_ARN" \
+    --policy-document file://policy.json \
+    --set-as-default \
+    ; then
+    echo -e "${GREEN}IAM policy is updated.\n${NC}"
+  else
+    echo -e "${RED}Failed to update IAM policy.${NC}"
+    exit 0
+  fi
 fi
 
 # Step 4: Create IAM service account
