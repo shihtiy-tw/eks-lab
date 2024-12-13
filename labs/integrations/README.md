@@ -19,3 +19,4 @@
 | trident-csi                     | V    |        |            | V       |
 | nvidia-gpu-operator             | V    |        |            |         |
 | nvidia-k8s-device-plugin        | V    |        |            |         |
+| nginx-ingress-controller        | V    |        |            |         |
