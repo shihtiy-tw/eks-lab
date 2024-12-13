@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3-reader
+  namespace: pod-identity
+spec:
+  selector:
+    matchLabels:
+      app: s3-reader
+  template:
+    metadata:
+      labels:
+        app: s3-reader
+    spec:
+      serviceAccountName: s3-reader
+      containers:
+        - name: s3-reader
+          image: public.ecr.aws/aws-cli/aws-cli
+          command:
+            - "/bin/sh"
+          args:
+            - "-c"
+            - "aws s3 ls && sleep 3600"
+      restartPolicy: Always
