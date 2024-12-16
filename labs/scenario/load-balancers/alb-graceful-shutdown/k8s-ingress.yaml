@@ -1,0 +1,26 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alb
+  namespace: load-balancers
+  annotations:
+    alb.ingress.kubernetes.io/group.name: alb-graceful-shutdown
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/actions.nginx-service: >
+      {"type":"forward","forwardConfig":{"targetGroups":[{"serviceName":"nginx-service","servicePort":"80"}]}}
+spec:
+  ingressClassName: alb
+  rules:
+    - host: nginx.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  name: use-annotation

@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netshoot-deployment
+  namespace: load-balancers
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: netshoot
+  template:
+    metadata:
+      labels:
+        app: netshoot
+    spec:
+      containers:
+        - name: netshoot
+          image: nicolaka/netshoot
+          command:
+            - "/bin/sh"
+          args:
+            - "-c"
+            - "while true; do echo $INGRESS_URL; sleep 10;done"
+          env:
+            - name: INGRESS_URL
+              value: ${INGRESS_URL}
+            - name: MY_ENV
+              value: MY_ENV
