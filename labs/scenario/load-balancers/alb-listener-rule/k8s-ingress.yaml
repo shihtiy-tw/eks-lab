@@ -1,0 +1,130 @@
+---
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#servicebackendport-v1-networking-k8s-io
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alb-listener-rule
+  annotations:
+    alb.ingress.kubernetes.io/group.name: alb-listener-rule
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/actions.nginx-service: >
+      {"type":"forward","forwardConfig":{"targetGroups":[{"serviceName":"nginx-service","servicePort":"80"}]}}
+    alb.ingress.kubernetes.io/conditions.nginx-service: >
+      [{"field":"host-header","hostHeaderConfig":{"values":["nginx.com"]}}, {"field":"source-ip","sourceIpConfig":{"values":["192.168.0.0/16",
+      "172.16.0.0/16"]}}]
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /source-ip
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  name: use-annotation
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: default
+  name: ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/group.name: alb-listener-rule
+    alb.ingress.kubernetes.io/actions.rule-path1: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"200","messageBody":"Host
+      is www.example.com OR anno.example.com"}}
+    alb.ingress.kubernetes.io/conditions.rule-path1: >
+      [{"field":"host-header","hostHeaderConfig":{"values":["anno.example.com"]}}]
+    alb.ingress.kubernetes.io/actions.rule-path2: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"200","messageBody":"Path
+      is /path2 OR /anno/path2"}}
+    alb.ingress.kubernetes.io/conditions.rule-path2: >
+      [{"field":"path-pattern","pathPatternConfig":{"values":["/anno/path2"]}}]
+    alb.ingress.kubernetes.io/actions.rule-path3: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"200","messageBody":"Http
+      header HeaderName is HeaderValue1 OR HeaderValue2"}}
+    alb.ingress.kubernetes.io/conditions.rule-path3: >
+      [{"field":"http-header","httpHeaderConfig":{"httpHeaderName": "HeaderName",
+      "values":["HeaderValue1", "HeaderValue2"]}}]
+    alb.ingress.kubernetes.io/actions.rule-path4: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"200","messageBody":"Http
+      request method is GET OR HEAD"}}
+    alb.ingress.kubernetes.io/conditions.rule-path4: >
+      [{"field":"http-request-method","httpRequestMethodConfig":{"Values":["GET",
+      "HEAD"]}}]
+    alb.ingress.kubernetes.io/actions.rule-path5: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"200","messageBody":"Query
+      string is paramA:valueA1 OR paramA:valueA2"}}
+    alb.ingress.kubernetes.io/conditions.rule-path5: >
+      [{"field":"query-string","queryStringConfig":{"values":[{"key":"paramA","value":"valueA1"},{"key":"paramA","value":"valueA2"}]}}]
+    alb.ingress.kubernetes.io/actions.rule-path6: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"200","messageBody":"Source
+      IP is 192.168.0.0/16 OR 172.16.0.0/16"}}
+    alb.ingress.kubernetes.io/conditions.rule-path6: >
+      [{"field":"source-ip","sourceIpConfig":{"values":["192.168.0.0/16", "172.16.0.0/16"]}}]
+    alb.ingress.kubernetes.io/actions.rule-path7: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"200","messageBody":"multiple
+      conditions applies"}}
+    alb.ingress.kubernetes.io/conditions.rule-path7: >
+      [{"field":"http-header","httpHeaderConfig":{"httpHeaderName": "HeaderName",
+      "values":["HeaderValue"]}},{"field":"query-string","queryStringConfig":{"values":[{"key":"paramA","value":"valueA"}]}},{"field":"query-string","queryStringConfig":{"values":[{"key":"paramB","value":"valueB"}]}}]
+spec:
+  ingressClassName: alb
+  rules:
+    - host: www.example.com
+      http:
+        paths:
+          - path: /path1
+            pathType: Exact
+            backend:
+              service:
+                name: rule-path1
+                port:
+                  name: use-annotation
+          - path: /path2
+            pathType: Exact
+            backend:
+              service:
+                name: rule-path2
+                port:
+                  name: use-annotation
+          - path: /path3
+            pathType: Exact
+            backend:
+              service:
+                name: rule-path3
+                port:
+                  name: use-annotation
+          - path: /path4
+            pathType: Exact
+            backend:
+              service:
+                name: rule-path4
+                port:
+                  name: use-annotation
+          - path: /path5
+            pathType: Exact
+            backend:
+              service:
+                name: rule-path5
+                port:
+                  name: use-annotation
+          - path: /path6
+            pathType: Exact
+            backend:
+              service:
+                name: rule-path6
+                port:
+                  name: use-annotation
+          - path: /path7
+            pathType: Exact
+            backend:
+              service:
+                name: rule-path7
+                port:
+                  name: use-annotation
