@@ -5,7 +5,7 @@ metadata:
   name: alb
   namespace: load-balancers
   annotations:
-    alb.ingress.kubernetes.io/group.name: alb-graceful-shutdown
+    alb.ingress.kubernetes.io/group.name: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'

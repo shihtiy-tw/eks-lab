@@ -2,6 +2,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namePrefix: graceful-shutdown-
+namespace: load-balancers
 resources:
   - k8s-deployment-nginx.yaml
   - k8s-deployment-netshoot.yaml
@@ -20,3 +21,16 @@ replacements:
           name: netshoot-deployment
         fieldPaths:
           - spec.template.spec.containers.[name=netshoot].env.[name=MY_ENV].value
+  - source:
+      kind: ConfigMap
+      name: config
+      version: v1
+      fieldPath: data.Test
+    targets:
+      - select:
+          kind: ingress
+          name: alb
+        fieldPaths:
+          - spec.template.spec.containers.[name=netshoot].env.[name=MY_ENV].value
+configurations:
+  - kustomizeconfig.yaml
