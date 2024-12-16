@@ -1,0 +1,22 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namePrefix: graceful-shutdown-
+resources:
+  - k8s-deployment-nginx.yaml
+  - k8s-deployment-netshoot.yaml
+  - k8s-service.yaml
+  - k8s-ingress.yaml
+  - k8s-configmap.yaml
+replacements:
+  - source:
+      kind: ConfigMap
+      name: config
+      version: v1
+      fieldPath: data.test
+    targets:
+      - select:
+          kind: Deployment
+          name: netshoot-deployment
+        fieldPaths:
+          - spec.template.spec.containers.[name=netshoot].env.[name=MY_ENV].value
