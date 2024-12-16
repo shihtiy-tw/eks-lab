@@ -5,3 +5,4 @@ metadata:
   name: load-balancers
   labels:
     name: load-balancers
+    elbv2.k8s.aws/pod-readiness-gate-inject: enabled
