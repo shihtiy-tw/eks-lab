@@ -1,0 +1,13 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namePrefix: hostname-routing-
+namespace: load-balancers
+resources:
+  - k8s-deployment-apache.yaml
+  - k8s-deployment-nginx.yaml
+  - k8s-ingress.yaml
+  - k8s-service-apache.yaml
+  - k8s-service-nginx.yaml
+configurations:
+  - kustomizeconfig.yaml

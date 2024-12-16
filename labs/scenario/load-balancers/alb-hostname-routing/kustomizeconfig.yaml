@@ -1,0 +1,7 @@
+---
+nameReference:
+  - kind: Ingress
+    version: v1
+    fieldSpecs:
+      - kind: Ingress
+        path: metadata/annotations/alb.ingress.kubernetes.io\/group.name
