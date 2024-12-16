@@ -22,6 +22,7 @@ managedNodeGroups:
           # (Optional) Only required if you have "Amazon CloudWatch Observability" setup
         - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
         - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
     ssh:
       allow: false
     bottlerocket:
