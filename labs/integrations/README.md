@@ -21,3 +21,4 @@
 | nvidia-k8s-device-plugin        | V    |        |            |         |
 | nginx-ingress-controller        | V    |        |            |         |
 | eks-pod-identity-agent          |      |        | V          |         |
+| cluster-autoscaler              | V    | V      |            |         |
