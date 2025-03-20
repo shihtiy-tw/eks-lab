@@ -1,0 +1,24 @@
+---
+apiVersion: eks.amazonaws.com/v1
+kind: NodeClass
+metadata:
+  name: basic
+spec:
+  ephemeralStorage:
+    size: "160Gi"
+
+  # Required: Name of IAM Role for Nodes
+  role: eksctl-EKS-Lab-1-31-auto-cluster-AutoModeNodeRole-xLATrowcCpm2
+
+  # Required: Subnet selection for node placement
+  subnetSelectorTerms:
+    - tags:
+        # Name: "<tag-name>"
+        karpenter.sh/discovery: "EKS-Lab-1-31-auto"
+        kubernetes.io/role/internal-elb: "1"
+
+  # Required: Security group selection for nodes
+  securityGroupSelectorTerms:
+    - tags:
+        kubernetes.io/cluster/EKS-Lab-1-31-auto: "owned"
+        aws:eks:cluster-name: "EKS-Lab-1-31-auto"
