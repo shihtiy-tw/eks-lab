@@ -253,6 +253,9 @@ data:
                     weight: 1
                 type: MostAllocated
             name: NodeResourcesFit
+    clientConnection:
+      burst: 200
+      qps: 100
 ---
 apiVersion: apps/v1
 kind: Deployment
