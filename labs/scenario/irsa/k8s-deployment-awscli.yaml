@@ -1,0 +1,46 @@
+---
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: awscli
+  labels:
+    app: awscli
+spec:
+  selector:
+    matchLabels:
+      app: awscli
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: awscli
+      labels:
+        app: awscli
+    spec:
+      serviceAccountName: awscli-sa
+      containers:
+        - name: awscli
+          image: public.ecr.aws/aws-cli/aws-cli
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+            - containerPort: 80
+              name: awscli
+          command:
+            - "/bin/sh"
+            - "-c"
+          args:
+            - "while true; do sleep 3600; done"
+      restartPolicy: Always
