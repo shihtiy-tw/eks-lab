@@ -1,0 +1,36 @@
+---
+# https://kubernetes.io/docs/concepts/workloads/pods/
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "netshoot"
+  namespace: default
+  labels:
+    app: "netshoot"
+spec:
+  securityContext:
+    sysctls:
+      - name: kernel.shm_rmid_forced
+        value: "0"
+      - name: net.core.somaxconn
+        value: "1024"
+      - name: kernel.msgmax
+        value: "65536"
+  nodeSelector:
+    custom-bootstrap: "true"
+  containers:
+    - name: netshoot
+      image: "nicolaka/netshoot"
+      resources:
+        limits:
+          cpu: 200m
+          memory: 500Mi
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      command:
+        - "/bin/sh"
+        - "-c"
+      args:
+        - "while true; do sleep 3600; done"
+  restartPolicy: Always
