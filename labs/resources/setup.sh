@@ -41,9 +41,9 @@ case "$1" in
         echo -e "${GREEN}Setting up EKS managed nodegroup...${NC}"
         "$PWD"/scripts/setup-managed-nodegroup.sh "$2" "$3" "$4" "$5" "$6"
         ;;
-    nodegroup)
+    self-managed-nodegroup)
         echo -e "${GREEN}Setting up EKS self-managed nodegroup...${NC}"
-        "$PWD"/scripts/setup-nodegruop.sh "$2" "$3" "$4" "$5" "$6"
+        "$PWD"/scripts/setup-self-managed-nodegroup.sh "$2" "$3" "$4" "$5" "$6"
         ;;
     *)
         echo -e "${RED}Invalid setup command: $1${NC}"

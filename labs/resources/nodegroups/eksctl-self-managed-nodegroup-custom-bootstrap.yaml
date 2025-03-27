@@ -8,14 +8,17 @@ metadata:
   tags:
     auto-delete: "no"
     auto-stop: "no"
-managedNodeGroups:
-  - name: managed-nodegroup-${NODEGROUP_CONFIG}
+nodeGroups:
+  - name: self-managed-nodegroup-${NODEGROUP_CONFIG}
     instanceType: ${NODEGROUP_SIZE}
     desiredCapacity: 1
     amiFamily: AmazonLinux2
     overrideBootstrapCommand: |
       #!/bin/bash
-      /etc/eks/bootstrap.sh ${EKS_CLUSTER_NAME} --kubelet-extra-args '--cpu-manager-policy=static --kube-reserved cpu=500m,memory=3Gi,ephemeral-storage=2Gi'
+      /etc/eks/bootstrap.sh ${EKS_CLUSTER_NAME} \
+          --kubelet-extra-args '--cpu-manager-policy=static \
+          --allowed-unsafe-sysctls="kernel.msg*,net.core.somaxconn" \
+          --kube-reserved cpu=500m,memory=3Gi,ephemeral-storage=2Gi'
     iam:
       attachPolicyARNs:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
@@ -30,6 +33,7 @@ managedNodeGroups:
         - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
     ssh:
       allow: false
+    labels: {custom-bootstrap: "true"}
     tags:
       auto-delete: 'no'
       auto-stop: 'no'
