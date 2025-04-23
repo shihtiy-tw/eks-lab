@@ -1,0 +1,55 @@
+---
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#servicebackendport-v1-networking-k8s-io
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alb-listener-port
+  annotations:
+    alb.ingress.kubernetes.io/group.name: alb-listener-port
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/actions.nginx-service: >
+      {"type":"forward","forwardConfig":{"targetGroups":[{"serviceName":"nginx-service","servicePort":"80"}]}}
+    alb.ingress.kubernetes.io/conditions.nginx-service: >
+      [{"field":"host-header","hostHeaderConfig":{"values":["nginx.com"]}}, {"field":"source-ip","sourceIpConfig":{"values":["192.168.0.0/16",
+      "172.16.0.0/16"]}}]
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /source-ip
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  name: use-annotation
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alb-listener-port
+  annotations:
+    alb.ingress.kubernetes.io/group.name: alb-listener-port
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 81}]'
+    alb.ingress.kubernetes.io/actions.nginx-service-1: >
+      {"type":"forward","forwardConfig":{"targetGroups":[{"serviceName":"nginx-service-1","servicePort":"80"}]}}
+    alb.ingress.kubernetes.io/conditions.nginx-service: >
+      [{"field":"host-header","hostHeaderConfig":{"values":["nginx.com"]}}, {"field":"source-ip","sourceIpConfig":{"values":["192.168.0.0/16",
+      "172.16.0.0/16"]}}]
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /source-ip
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service-1
+                port:
+                  name: use-annotation
