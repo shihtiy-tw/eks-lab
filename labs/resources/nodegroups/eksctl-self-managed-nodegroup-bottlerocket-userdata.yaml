@@ -1,0 +1,59 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: ${EKS_CLUSTER_NAME}
+  version: "${CLUSTER_VERSION}"
+  region: ${EKS_CLUSTER_REGION}
+  tags: {"auto-delete": "no", "auto-stop": "no"}
+nodeGroups:
+  - name: self-managed-nodegroup-${NODEGROUP_CONFIG}-${INSTANCE_TYPE}
+    instanceType: ${NODEGROUP_SIZE}
+    desiredCapacity: 1
+    amiFamily: Bottlerocket
+    iam:
+      attachPolicyARNs:
+        # https://github.com/bottlerocket-os/bottlerocket/issues/4396
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+          # (Optional) Only required if you need "EC2 Instance Connect"
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+          # (Optional) Only required if you are using "SSM"
+        - arn:aws:iam::aws:policy/AmazonSSMPatchAssociation
+          # (Optional) Only required if you have "Amazon CloudWatch Observability" setup
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
+    ssh:
+      allow: false
+    bottlerocket:
+      settings:
+        motd: "Hello from eksctl!"
+        # https://github.com/bottlerocket-os/bottlerocket-bootstrap-container
+        # https://eksctl.io/usage/custom-ami-support/?h=bottlerocket#bottlerocket-custom-ami-support
+        bootstrap-containers:
+          bootstrap:
+            source: "ubuntu"
+            mode: "once"
+            #  #!/usr/bin/env sh
+            # set -euo pipefail
+            #
+            #  # Create the directory
+            # mkdir -p /var/lib/test
+            #
+            #  # Set API client configurations
+            # apiclient set --json '{"settings": {"oci-defaults": {"resource-limits": {"max-open-files": {"soft-limit": 4294967296, "hard-limit": 8589934592}}}}}'
+            #
+            #  # Load kernel module
+            # if command -v modprobe > /dev/null 2>&1; then
+            #   modprobe dummy
+            # fi
+            #
+            # echo "User-data script executed."
+            user-data: "IyEvdXNyL2Jpbi9lbnYgc2gKc2V0IC1ldW8gcGlwZWZhaWwKCiAjIENyZWF0ZSB0aGUgZGlyZWN0b3J5Cm1rZGlyIC1wIC92YXIvbGliL3Rlc3QKCiAjIFNldCBBUEkgY2xpZW50IGNvbmZpZ3VyYXRpb25zCmFwaWNsaWVudCBzZXQgLS1qc29uICd7InNldHRpbmdzIjogeyJvY2ktZGVmYXVsdHMiOiB7InJlc291cmNlLWxpbWl0cyI6IHsibWF4LW9wZW4tZmlsZXMiOiB7InNvZnQtbGltaXQiOiA0Mjk0OTY3Mjk2LCAiaGFyZC1saW1pdCI6IDg1ODk5MzQ1OTJ9fX19fScKCiAjIExvYWQga2VybmVsIG1vZHVsZQppZiBjb21tYW5kIC12IG1vZHByb2JlID4gL2Rldi9udWxsIDI+JjE7IHRoZW4KICBtb2Rwcm9iZSBkdW1teQpmaQoKZWNobyAiVXNlci1kYXRhIHNjcmlwdCBleGVjdXRlZC4iCgo="
+      enableAdminContainer: true
+    tags:
+      auto-delete: 'no'
+      auto-stop: 'no'
+      k8s.io/cluster-autoscaler/${EKS_CLUSTER_NAME}: 'owned'
+      k8s.io/cluster-autoscaler/enabled: 'true'

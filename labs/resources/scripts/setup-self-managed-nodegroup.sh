@@ -25,6 +25,14 @@ if [[ $NODEGROUP_CONFIG = "custom-ami" ]]; then
     --query 'Images[*].ImageId' --output text)
 
   cat "$PWD/nodegroups/eksctl-self-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE},${CUSTOM_AMI},${INSTANCE_TYPE}' > "$NODEGROUP_FILE"
+
+elif [[ $NODEGROUP_CONFIG = "bottlerocket-userdata" ]]; then
+
+  # https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#cluster-info
+  eksctl get cluster --region "$EKS_CLUSTER_REGION" --name "$EKS_CLUSTER_NAME" -o json \
+   | jq --raw-output '.[] | "[settings.kubernetes]\napi-server = \"" + .Endpoint + "\"\ncluster-certificate =\"" + .CertificateAuthority.Data + "\"\ncluster-name = \"bottlerocket\""' > user-data.toml
+
+  cat "$PWD/nodegroups/eksctl-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE},${INSTANCE_TYPE}' > "$NODEGROUP_FILE"
 else
   cat "$PWD/nodegroups/eksctl-self-managed-nodegroup-$NODEGROUP_CONFIG".yaml | envsubst '${EKS_CLUSTER_NAME},${CLUSTER_VERSION},${EKS_CLUSTER_REGION},${AZ_ARRAY},${NODEGROUP_CONFIG},${NODEGROUP_SIZE},${INSTANCE_TYPE}' > "$NODEGROUP_FILE"
 fi
