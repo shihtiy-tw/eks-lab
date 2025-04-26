@@ -17,6 +17,7 @@ managedNodeGroups:
     overrideBootstrapCommand: |
       #!/bin/bash
       /etc/eks/bootstrap.sh ${EKS_CLUSTER_NAME}
+          --kubelet-extra-args '--v=8'
     iam:
       attachPolicyARNs:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
