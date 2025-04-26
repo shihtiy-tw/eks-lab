@@ -13,13 +13,20 @@ managedNodeGroups:
     instanceType: ${NODEGROUP_SIZE}
     desiredCapacity: 1
     amiFamily: AmazonLinux2023
-    ami: ${CUSTOM_AMI}
     # https://eksctl.io/usage/custom-ami-support/
     # For AmazonLinux2023, since it stops using the /etc/eks/bootstrap.sh script for node bootstrapping, in favour of a nodeadm initialization process (for more information, please refer to node bootstrapping docs), overrideBootstrapCommand is not supported
-    #
-    # overrideBootstrapCommand: |
-    #  #!/bin/bash
-    #   /etc/eks/bootstrap.sh ${EKS_CLUSTER_NAME}
+    # https://awslabs.github.io/amazon-eks-ami/nodeadm/doc/examples/
+    overrideBootstrapCommand: |
+      apiVersion: node.eks.aws/v1alpha1
+      kind: NodeConfig
+      spec:
+        kubelet:
+          config:
+            shutdownGracePeriod: 30s
+            featureGates:
+              DisableKubeletCloudCredentialProviders: true
+          flag:
+            v: 8
     iam:
       attachPolicyARNs:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
