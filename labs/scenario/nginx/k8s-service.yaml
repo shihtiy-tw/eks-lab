@@ -1,0 +1,16 @@
+---
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: trace-nginx
+  namespace: default
+spec:
+  selector:
+    app: nginx
+  type: ClusterIP
+  ports:
+    - name: test-nginx
+      protocol: TCP
+      port: 80
+      targetPort: 80
