@@ -1,0 +1,23 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: app
+  namespace: mtls
+  labels:
+    app: mtls
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mtls
+  template:
+    metadata:
+      labels:
+        app: mtls
+    spec:
+      containers:
+        - name: app
+          image: hashicorp/http-echo
+          args:
+            - "-text=mTLS Sample Application in Amazon EKS"

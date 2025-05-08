@@ -1,0 +1,37 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: mtls
+  name: ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/load-balancer-name: mtls-demo
+    alb.ingress.kubernetes.io/tags: auto-delete=no
+    # Listen port configuration
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 80}, {"HTTPS": 443}, {"HTTPS":
+      8080}, {"HTTPS": 8443}]'
+    ## TLS Settings
+    alb.ingress.kubernetes.io/certificate-arn: CERTIFICATE_ARN  # specifies the ARN of one or more certificate managed by AWS Certificate Manager
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06  # Optional (Picks default if not used)
+
+    # mTLS configuration
+    alb.ingress.kubernetes.io/mutual-authentication: '[{"port": 80, "mode": "passthrough"},
+      {"port": 443, "mode": "verify", "trustStore": "TRUSTORE_ARN", "ignoreClientCertificateExpiry"
+      : true}]'
+    # New load balancer attributes for enabling connection logs for Ingresses
+    alb.ingress.kubernetes.io/load-balancer-attributes: connection_logs.s3.enabled=true,connection_logs.s3.bucket=LOG_BUCKET_NAME,connection_logs.s3.prefix=mtls-alb
+spec:
+  ingressClassName: alb
+  rules:
+    - host: SERVICES_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mtls-service
+                port:
+                  number: 80
