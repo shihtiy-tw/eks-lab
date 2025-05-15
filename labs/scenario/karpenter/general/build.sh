@@ -44,7 +44,7 @@ fi
 
 # To get AL2 alias
 echo -e "${YELLOW}Getting AL2 alias...${NC}"
-export ALIAS=$(aws ssm get-parameters-by-path --path "/aws/service/eks/optimized-ami/$CLUSTER_VERSION/amazon-linux-2/" --recursive | jq -cr '.Parameters[].Name' | grep -v "recommended" | awk -F '/' '{print $8}' | sed -r 's/.*(v[[:digit:]]+)$/\1/' | sort | uniq | head -n 1)
+export ALIAS=$(aws ssm get-parameters-by-path --path "/aws/service/eks/optimized-ami/$CLUSTER_VERSION/amazon-linux-2/" --recursive | jq -cr '.Parameters[].Name' | grep -v "recommended" | awk -F '/' '{print $8}' | sed -r 's/.*(v[[:digit:]]+)$/\1/' | sort -r | uniq | head -n 1)
 
 echo -e "\n${YELLOW}=== Current Environment Configuration ===${NC}\n"
 print_info "EKS Cluster Name" "$EKS_CLUSTER_NAME"
