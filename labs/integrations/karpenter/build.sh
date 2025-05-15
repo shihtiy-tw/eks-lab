@@ -123,8 +123,8 @@ eksctl create iamserviceaccount \
   --override-existing-serviceaccounts
 
 # Install Karpenter CRDs
-# echo -e "${YELLOW}Installing Karpenter Custom Resource Definitions...${NC}"
-# helm upgrade --install karpenter-crd oci://public.ecr.aws/karpenter/karpenter-crd --version "$CHART_VERSION" --namespace "$NAMESPACE" --create-namespace
+echo -e "${YELLOW}Installing Karpenter Custom Resource Definitions...${NC}"
+helm upgrade --install karpenter-crd oci://public.ecr.aws/karpenter/karpenter-crd --version "$CHART_VERSION" --namespace "$NAMESPACE" --create-namespace
 
 # Check if Helm resources exist
 echo -e "${YELLOW}Checking for existing Helm resources...${NC}"
@@ -152,6 +152,7 @@ helm upgrade \
     --set controller.resources.requests.memory=500Mi \
     --set controller.resources.limits.cpu=1 \
     --set controller.resources.limits.memory=1Gi \
+    --set controller.logLevel=debug \
     --wait
 
 # List installed Helm charts
