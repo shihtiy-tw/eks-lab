@@ -1,75 +1,101 @@
-## Overview
+# EKS Resources
 
-A EKS cluster takes around 15 minutes to setup.
+This directory contains configuration files and templates for EKS clusters, nodegroups, launch templates, and other resources. These files serve as reference implementations and starting points for creating and managing EKS infrastructure.
 
-## Cluster Types
+## Directory Structure
 
-- minimal
-- full
+```
+resources/
+├── clusters/         # EKS cluster configurations
+├── config/           # Configuration files for EKS components
+├── custom-amis/      # Custom AMI definitions and configurations
+├── launch-templates/ # EC2 launch templates for EKS nodes
+├── nodegroups/       # EKS nodegroup definitions
+├── scripts/          # Utility scripts for resource management
+└── versions/         # Version-specific configurations
+```
 
-### Minimal Cluster
-
-- Control Plane logging
-- Fargate profile
-- Addon:
-  - VPC CNI Plugin
-  - kube-proxy
-  - CoreDNS
-
-### Full Cluster
-
-- Control Plane logging
-- Fargate profile
-- Addon:
-  - VPC CNI Plugin
-  - kube-proxy
-  - CoreDNS
-  - EBS CSI Driver
-  - EFS CSI Driver
-  - EKS Pod Identity Agent
-  - CloudWatch Obervability
-- IAM Service Account
-
-## Getting started
-
-This script (`setup.sh`) automates the process of setting up an Amazon EKS (Elastic Kubernetes Service) cluster. It provides a flexible way to configure cluster parameters and supports different cluster configurations.
-
-## Usage
+## Key Components
 
 ### Clusters
 
+The `clusters` directory contains example configurations for creating EKS clusters with different settings and features. These examples demonstrate:
+
+- Cluster creation with eksctl
+- Custom networking configurations
+- Control plane logging options
+- Cluster add-on configurations
+
+### Nodegroups
+
+The `nodegroups` directory provides examples for different types of EKS nodegroups:
+
+- Managed nodegroups
+- Self-managed nodegroups
+- Spot instance nodegroups
+- GPU-enabled nodegroups
+- Windows nodegroups
+
+### Launch Templates
+
+The `launch-templates` directory contains EC2 launch template configurations for EKS nodes, including:
+
+- AL2023 optimized templates
+- Custom user data scripts
+- Instance type selections
+- Storage configurations
+
+### Custom AMIs
+
+The `custom-amis` directory provides examples for creating and using custom AMIs with EKS, including:
+
+- AMI customization scripts
+- Packer templates
+- Post-installation configurations
+
+## Usage
+
+### Listing Resources
+
+To list all clusters and nodegroups:
+
 ```bash
-$ ./setup.sh cluster [CLUSTER_VERSION] [REGION] [CONFIG_TYPE]
-$ ./setup.sh cluster 1.29 us-east-2 minimal
+../scripts/list-cluster-nodegroup.sh
 ```
 
-1. CLUSTER_NAME (optional): Name of the EKS cluster. If not provided, defaults to "EKS-Lab-VERSION".
-2. REGION (optional): AWS region to deploy the cluster. Defaults to "us-east-1" if not specified.
-3. CONFIG_TYPE (optional): Type of cluster configuration. Options are:
-   - full: Full cluster setup (default)
-   - minimal: Minimal cluster configuration
-   - ipv6: Cluster with IPv6 support
-   - private: Private cluster configuration
-
-### Nodegroup
+Or use the Makefile from the root directory:
 
 ```bash
-$ ./setup.sh managed-nodegroup [CLUSTER_VERSION] [REGION] [CLUSTER_CONFIG_TYPE] [NODEGROUP_CONFIG] [NODEGROUP_SIZE]
-$ ./setup.sh managed-nodegroup 1.29 us-west-1 minimal on-demand m5.large
+make list
 ```
 
-## Tool
+### Creating Resources
 
-### VSCode
-
-eksctl schema
+The configuration files in this directory can be used as references when creating your own EKS resources. For example:
 
 ```bash
-eksctl utils schema
+# Create a cluster using eksctl
+eksctl create cluster -f clusters/example-cluster.yaml
+
+# Create a nodegroup
+eksctl create nodegroup -f nodegroups/example-nodegroup.yaml
 ```
 
-yaml-language-server
+## Best Practices
 
-```yaml
-# yaml-language-server: $schema=<path to eksctl scheme>
-```
+When working with EKS resources:
+
+1. Always use Infrastructure as Code (IaC) to define and manage resources
+2. Follow the principle of least privilege for IAM roles and policies
+3. Use tagging for resource organization and cost allocation
+4. Consider using managed nodegroups for simplified operations
+5. Implement proper networking and security configurations
+
+## Prerequisites
+
+Before creating EKS resources:
+
+1. Install required tools from the [toolkit directory](../../toolkit/)
+2. Configure AWS credentials with appropriate permissions
+3. Understand the AWS and Kubernetes resource model
+4. Plan your networking and security requirements
