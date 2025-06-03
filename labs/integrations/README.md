@@ -22,3 +22,4 @@
 | nginx-ingress-controller        | V    |        |            |         |
 | eks-pod-identity-agent          |      |        | V          |         |
 | cluster-autoscaler              | V    | V      |            |         |
+| prometheus-grafana              | V    |        |            |         |
