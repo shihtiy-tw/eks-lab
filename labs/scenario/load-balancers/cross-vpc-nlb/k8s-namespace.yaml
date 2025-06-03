@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cross-vpc-demo
+  labels:
+    name: cross-vpc-demo

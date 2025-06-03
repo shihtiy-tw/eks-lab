@@ -1,0 +1,20 @@
+---
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: cross-vpc-tgb
+  namespace: cross-vpc-demo
+spec:
+  serviceRef:
+    name: sample-app
+    port: 80
+  targetGroupARN: TARGET_GROUP_ARN
+  targetType: ip
+  networking:
+    ingress:
+      - from:
+          - securityGroup:
+              groupID: SECURITY_GROUP_ID
+        ports:
+          - port: 80
+            protocol: TCP

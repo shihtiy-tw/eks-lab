@@ -1,0 +1,24 @@
+---
+clusterName: CLUSTER_NAME
+region: REGION
+vpcId: VPC2_ID
+serviceAccount:
+  create: false
+  name: aws-load-balancer-controller
+  annotations:
+    eks.amazonaws.com/role-arn: ROLE_ARN
+enableShield: false
+enableWaf: false
+enableWafv2: false
+createIngressClassResource: true
+ingressClassParams:
+  name: alb
+  scheme: internet-facing
+  ipAddressType: ipv4
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
