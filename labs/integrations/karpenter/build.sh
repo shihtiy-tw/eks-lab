@@ -96,7 +96,8 @@ aws cloudformation deploy \
   --stack-name "Karpenter-${EKS_CLUSTER_NAME}" \
   --template-file cloudformation.yaml \
   --capabilities CAPABILITY_NAMED_IAM \
-  --parameter-overrides "ClusterName=${EKS_CLUSTER_NAME}"
+  --parameter-overrides "ClusterName=${EKS_CLUSTER_NAME}" \
+  --region "$AWS_REGION"
 
 rm -vf cloudformation.yaml # cleanup
 
