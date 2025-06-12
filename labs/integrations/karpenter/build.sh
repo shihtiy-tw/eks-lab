@@ -81,25 +81,25 @@ else
   echo -e "${GREEN}Using specified helm app version: ${APP_VERSION}\n${NC}"
 fi
 
-# Setup IAM resources
-echo -e "${YELLOW}Setting up IAM resources...${NC}"
-curl -fsSL "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v${APP_VERSION}/website/content/en/preview/getting-started/getting-started-with-karpenter/cloudformation.yaml" -O
-
-if [ ! -f "cloudformation.yaml" ]; then
-  echo -e "${RED}Failed to download cloudformation.yaml${NC}"
-  exit 1
-fi
-
-# Deploy CloudFormation stack
-echo -e "${YELLOW}Deploying CloudFormation stack...${NC}"
-aws cloudformation deploy \
-  --stack-name "Karpenter-${EKS_CLUSTER_NAME}" \
-  --template-file cloudformation.yaml \
-  --capabilities CAPABILITY_NAMED_IAM \
-  --parameter-overrides "ClusterName=${EKS_CLUSTER_NAME}" \
-  --region "$AWS_REGION"
-
-rm -vf cloudformation.yaml # cleanup
+# # Setup IAM resources
+# echo -e "${YELLOW}Setting up IAM resources...${NC}"
+# curl -fsSL "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v${APP_VERSION}/website/content/en/preview/getting-started/getting-started-with-karpenter/cloudformation.yaml" -O
+#
+# if [ ! -f "cloudformation.yaml" ]; then
+#   echo -e "${RED}Failed to download cloudformation.yaml${NC}"
+#   exit 1
+# fi
+#
+# # Deploy CloudFormation stack
+# echo -e "${YELLOW}Deploying CloudFormation stack...${NC}"
+# aws cloudformation deploy \
+#   --stack-name "Karpenter-${EKS_CLUSTER_NAME}" \
+#   --template-file cloudformation.yaml \
+#   --capabilities CAPABILITY_NAMED_IAM \
+#   --parameter-overrides "ClusterName=${EKS_CLUSTER_NAME}" \
+#   --region "$AWS_REGION"
+#
+# rm -vf cloudformation.yaml # cleanup
 
 # Create IAM identity mapping
 echo -e "${YELLOW}Creating IAM identity mapping...${NC}"

@@ -17,3 +17,5 @@ spec:
   securityGroupSelectorTerms:
     - tags:
         karpenter.sh/discovery: "${EKS_CLUSTER_NAME}"  # replace with your cluster name
+  tags:
+    node: karpenter-general

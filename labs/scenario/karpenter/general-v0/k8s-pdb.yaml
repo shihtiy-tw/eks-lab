@@ -1,0 +1,12 @@
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: karpenter-nginx-pdb
+  namespace: karpenter
+spec:
+  # minAvailable: 100%
+  maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: karpenter-nginx
