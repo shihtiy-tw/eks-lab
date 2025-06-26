@@ -1,0 +1,69 @@
+---
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args:
+          - --allow-multiple-documents
+      - id: check-added-large-files
+      - id: detect-private-key
+      - id: detect-aws-credentials
+# Go specific hooks
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      - id: go-fmt
+        name: go fmt
+        description: Runs go fmt on Go files.
+#    -   id: go-vet
+#        name: go vet
+#        description: Runs go vet on Go files.
+      - id: go-imports
+        name: go imports
+        description: Runs goimports on Go files.
+      - id: go-cyclo
+        name: go cyclo
+        description: Runs gocyclo on Go files.
+        args:
+          - -over=15
+      - id: validate-toml
+        name: validate toml
+        description: Runs tomlv on TOML files.
+      - id: no-go-testing
+        name: no go testing
+        description: Checks that no testing.T is being used in non-test files.
+      # - id: golangci-lint
+      #   name: golangci-lint
+      #   description: Runs golangci-lint on Go files.
+      #   args:
+      #     - --fast
+      - id: go-critic
+        name: go critic
+        description: Runs gocritic on Go files.
+      # - id: go-unit-tests
+      #   name: go unit tests
+      #   description: Runs go test on Go files.
+
+# Terraform specific hooks (since your project also uses Terraform)
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.77.1
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      - id: terraform_docs
+
+# Custom hook for SSH host keys
+  - repo: local
+    hooks:
+      - id: check-ssh-host-keys
+        name: Check for SSH host keys
+        description: Prevents committing SSH host keys
+        entry: .git/hooks/ssh_host_check.sh
+        language: script
+        types:
+          - file

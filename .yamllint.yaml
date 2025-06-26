@@ -1,0 +1,22 @@
+---
+extends: default
+rules:
+  line-length:
+    max: 250
+    level: warning  # Changed from error to warning
+  document-start:
+    present: true
+  document-end:
+    present: false
+  truthy:
+    allowed-values:
+      - 'true'
+      - 'false'
+      - 'yes'
+      - 'no'
+  comments:
+    min-spaces-from-content: 1
+ignore: |-
+  .git/
+  node_modules/
+  vendor/
