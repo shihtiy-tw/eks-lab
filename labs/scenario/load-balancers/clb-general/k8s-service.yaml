@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clb-service
+spec:
+  selector:
+    app: nginx-clb
+  ports:
+    - protocol: TCP
+      port: 80
+  type: LoadBalancer
+  externalTrafficPolicy: Local
