@@ -237,6 +237,8 @@ check_controller_installation() {
 echo -e "${YELLOW}Step 6: Checking aws-load-balancer-controller installation...${NC}"
 check_controller_installation "$CHART_VERSION" "$APP_VERSION"
 
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/refs/heads/main/config/crd/gateway/gateway-crds.yaml
+
 # Step 8: List aws-load-balancer-controller
 echo -e "${YELLOW}Step 8: Listing aws-load-balancer-controller...${NC}"
 if helm list --all-namespaces --filter aws-load-balancer-controller; then
